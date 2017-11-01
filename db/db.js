@@ -1,10 +1,11 @@
 let mongoose = require('mongoose');
 let config = require('../config/develop')
-
+const  autoIncrement = require('mongoose-auto-increment');
 mongoose.Promise = global.Promise;
 mongoose.connect(config.url, {useMongoClient: true});
 
 const db = mongoose.connection;
+//autoIncrement.initialize(mongoose.connection);
 
 db.once('open', () => {
     console.log('连接数据库成功')

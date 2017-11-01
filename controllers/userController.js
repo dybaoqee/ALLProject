@@ -1,7 +1,7 @@
 const crypto = require('crypto');
-const dateFormat = require('dateformat');
 const config = require('../config/develop')
 const agent = require('../models/angent');
+const dateFormat = require('dateformat');
 let agentModel = agent.agentModel;
 
 exports.addAgent = function (req, res) {
@@ -30,6 +30,7 @@ exports.addAgent = function (req, res) {
             'createtimestamp': dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')
         };
         let agentEntity = new agentModel(userInfo);
+
         agentEntity.save(function (err, log) {
             if (err) {
                 console.log("error :" + err);
@@ -48,15 +49,13 @@ exports.addAgent = function (req, res) {
 exports.addAdmin = function (req, res, err) {
     let salt = 'abl';
     let result = md5.update(req.body.password + salt).digest('hex');
-
     let agentInfo = {
         'username': req.body.username,
         'password': result,
         'country': req.body.country,
         'role': 'Admin',
-        'createtimestamp': new Date().toISOString()
+        'createtimestamp': dateFormat(new Date(), 'yyyy-mm-dd,HH:MM:ss ')
     };
-
     return res.status(200).json(agentInfo);
 };
 
@@ -68,11 +67,21 @@ exports.getAllAgents = function (req, res) {
             console.log(err);
             return res.status(404).json({'succeed': false, 'massage': 'Can not find anything'});
         }
-
         return res.status(200).json(agents);
 
-
     })
+};
 
+exports.getLimitAgents = function () {
+    let today = new Date();
+    today.setMonth(today.getMonth() - 1);
+
+    agentModel.find().where('createtimestamp').lt(today).sort('createtimestamp').exec((err, data) => {
+
+        console.log(data);
+
+
+    });
 
 };
+this.getLimitAgents();
